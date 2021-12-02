@@ -1,0 +1,9 @@
+- definition:
+    query:
+      collection_name: allowed-queries
+      query_name: GetPageByTail
+  url: getPageByTail/:tail
+  methods:
+  - GET
+  name: GetPageByTail
+  comment: null

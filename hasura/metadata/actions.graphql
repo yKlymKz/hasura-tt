@@ -1,0 +1,10 @@
+input Input {
+  pageId: String!
+}
+
+type Output {
+  title: String!
+  description: String!
+  id: Int
+}
+

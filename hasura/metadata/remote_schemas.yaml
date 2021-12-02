@@ -1,0 +1,5 @@
+- name: page_data
+  definition:
+    url: '{{ACTION_BACKEND_URL}}/api/graphql'
+    timeout_seconds: 60
+  comment: ""

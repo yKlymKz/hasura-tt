@@ -1,0 +1,13 @@
+table:
+  name: tiles
+  schema: public
+remote_relationships:
+- definition:
+    hasura_fields:
+    - json_id
+    remote_field:
+      getPageDataById:
+        arguments:
+          jsonId: $json_id
+    remote_schema: page_data
+  name: page_data

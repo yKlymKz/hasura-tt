@@ -1,0 +1,16 @@
+- name: allowed-queries
+  definition:
+    queries:
+    - name: GetPageByTail
+      query: |-
+        query GetPageByTail($tail:String!) {
+          tiles(where: {tail: {_eq: $tail}}) {
+            page_data {
+              description
+              id
+              title
+            }
+            json_id
+            tail
+          }
+        }

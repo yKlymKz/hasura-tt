@@ -1,0 +1,56 @@
+version: "3.6"
+services:
+  postgres:
+    image: postgres:12
+    restart: always
+    volumes:
+      - db_data1:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+  graphql-engine:
+    image: hasura/graphql-engine:v2.0.10
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_started
+      next-app:
+        condition: service_healthy
+    restart: always
+    environment:
+      ## postgres database to store Hasura metadata
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: "${HASURA_GRAPHQL_DATABASE_URL}"
+      ## this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
+      PG_DATABASE_URL: "${HASURA_GRAPHQL_DATABASE_URL}"
+      ## enable the console served by server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
+      ACTION_BACKEND_URL: ${ACTION_BACKEND_URL}
+  next-app:
+    build:
+      context: client
+      args:
+        PORT: 3000
+    volumes:
+      - ./client:/usr/app/
+    ports:
+      - "3000:3000"
+      - "49153:49153"
+    environment:
+      APP_ENV: ${APP_ENV}
+      HASURA_URL: http://graphql-engine:8080
+      HASURA_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
+      PAGES_JSON_URL: ${PAGES_JSON_URL}
+      PORT: 3000
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:3000"]
+      interval: 1m
+      timeout: 10s
+      retries: 7
+volumes:
+  db_data1:
